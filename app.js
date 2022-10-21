@@ -30,8 +30,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-
-// Временная авторизация
 app.use((req, res, next) => {
   req.user = {
     _id: '6351dc1cd2cf49af7364fe26',

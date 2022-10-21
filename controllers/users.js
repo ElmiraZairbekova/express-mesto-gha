@@ -1,6 +1,6 @@
-const User = require('../models/modelUser');
-const BadRequestError = require('../errors/BadRequestError');
-const NotFoundError = require('../errors/NotFoundError');
+const User = require("../models/users");
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
 
 const getAllUsers = (req, res, next) => {
   User.find({})
@@ -9,15 +9,18 @@ const getAllUsers = (req, res, next) => {
 };
 
 const getUser = (req, res, next) => {
-  User.findById(req.params._id)
-    .orFail()
-    .catch((err) => {
-      if (err.message === 'NotFound') {
-      throw new NotFoundError('Пользователь не найден');
-      }
-    })
+  User.findById(req.params.userId)
+    .orFail(() => new NotFoundError("Пользователь не найден"))
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "CastError") {
+        next(new BadRequestError("Переданы некорректные данные"));
+      }
+      if (err.message === "NotFound") {
+        next(new NotFoundError("Пользователь не найден"));
+      }
+      next(err);
+    });
 };
 
 const createUser = (req, res, next) => {
@@ -28,19 +31,21 @@ const createUser = (req, res, next) => {
     about,
     avatar,
   })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-      throw new BadRequestError('Переданы некорректные данные');
-      }
-    })
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        next(new BadRequestError("Переданы некорректные данные"));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const updateUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id,
+  User.findByIdAndUpdate(
+    req.user._id,
     {
       name,
       about,
@@ -49,38 +54,39 @@ const updateUser = (req, res, next) => {
     {
       new: true,
       runValidators: true,
-    })
-    .orFail(() => {
-      throw new NotFoundError('Пользователь не найден');
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
-      }
-    })
+    }
+  )
+    .orFail(() => new NotFoundError("Пользователь не найден"))
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError" || err.name === "CastError") {
+        next(new BadRequestError("Переданы некорректные данные"));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id,
+  User.findByIdAndUpdate(
+    req.user._id,
     { avatar },
     {
       new: true,
       runValidators: true,
-    })
-    .orFail(() => {
-      throw new NotFoundError('Пользователь не найден');
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
-      }
-    })
+    }
+  )
+    .orFail(() => new NotFoundError("Пользователь не найден"))
     .then((newAvatar) => res.send({ data: newAvatar }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError" || err.name === "CastError") {
+        throw new BadRequestError("Переданы некорректные данные");
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports = {

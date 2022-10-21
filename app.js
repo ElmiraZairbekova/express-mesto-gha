@@ -42,6 +42,11 @@ app.use((req, res, next) => {
 app.use(users);
 app.use(cards);
 
+app.use((req, res) => {
+  res.status(404)
+    .send('Запрашиваемый ресурс не найден');
+});
+
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({

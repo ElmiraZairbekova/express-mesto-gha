@@ -14,10 +14,7 @@ const getUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные'));
-      }
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь не найден'));
+        return next(new BadRequestError('Переданы некорректные данные'));
       }
       next(err);
     });

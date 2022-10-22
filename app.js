@@ -42,7 +42,7 @@ app.use(cards);
 
 app.use((req, res) => {
   res.status(404)
-    .send('Запрашиваемый ресурс не найден');
+    .send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.use((err, req, res, next) => {

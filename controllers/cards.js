@@ -4,7 +4,6 @@ const NotFoundError = require('../errors/NotFoundError');
 
 const getCards = (req, res, next) => {
   Card.find({})
-    .populate('user')
     .then((cards) => res.send({ data: cards }))
     .catch(next);
 };
@@ -33,7 +32,7 @@ const deleteCard = (req, res, next) => {
     .then(() => res.send('Карточка удалена'))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -50,7 +49,7 @@ const likeCard = (req, res, next) => {
     .then((likes) => res.send({ data: likes }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -70,7 +69,7 @@ const dislikeCard = (req, res, next) => {
     .then((likes) => res.send({ data: likes }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }

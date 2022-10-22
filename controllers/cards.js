@@ -29,7 +29,7 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   Card.findByIdAndDelete(req.params.cardId)
     .orFail(() => new NotFoundError('Карточка не найдена'))
-    .then(() => res.send('Карточка удалена'))
+    .then(() => res.send({ message: 'Карточка удалена' }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные'));
@@ -63,9 +63,6 @@ const dislikeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => new NotFoundError('Карточка не найдена'))
-    .catch(() => {
-      throw new NotFoundError('Карточка не найдена');
-    })
     .then((likes) => res.send({ data: likes }))
     .catch((err) => {
       if (err.name === 'CastError') {

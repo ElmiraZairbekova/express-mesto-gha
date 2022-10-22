@@ -16,7 +16,7 @@ const getUser = (req, res, next) => {
       if (err.name === 'CastError') {
        next(new BadRequestError('Переданы некорректные данные'));
       } else {
-      next(err);
+       next(err);
       }
     });
 };

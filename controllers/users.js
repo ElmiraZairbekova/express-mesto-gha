@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+
 const jwt = require('jsonwebtoken');
 const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
@@ -26,7 +27,9 @@ const getUser = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar, email } = req.body;
+  const {
+    name, about, avatar, email,
+  } = req.body;
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {

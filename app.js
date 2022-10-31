@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { celebrate, Joi } = require('celebrate');
 
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -34,7 +35,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-
 app.use(users);
 app.use(cards);
 app.use(auth);
@@ -42,7 +42,7 @@ app.use(errors());
 app.use(handleError);
 
 app.post(
-  "/signin",
+  '/signin',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -53,7 +53,7 @@ app.post(
 );
 
 app.post(
-  "/signup",
+  '/signup',
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
@@ -66,12 +66,10 @@ app.post(
   createUser
 );
 
-
 app.use((req, res) => {
   res.status(404)
     .send({ message: 'Запрашиваемый ресурс не найден' });
 });
-
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

@@ -3,10 +3,14 @@ const mongoose = require('mongoose');
 
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const { errors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-// Routes
+const { createUser, login } = require('./controllers/users');
+
+const auth = require('./middlewares/auth');
+const handleError = require('./middlewares/handleError');
+
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 
@@ -30,28 +34,44 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6351dc1cd2cf49af7364fe26',
-  };
-  next();
-});
 
 app.use(users);
 app.use(cards);
+app.use(auth);
+app.use(errors());
+app.use(handleError);
+
+app.post(
+  "/signin",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required(),
+    }),
+  }),
+  login
+);
+
+app.post(
+  "/signup",
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/),
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  }),
+  createUser
+);
+
 
 app.use((req, res) => {
   res.status(404)
     .send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
-  });
-  next();
-});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

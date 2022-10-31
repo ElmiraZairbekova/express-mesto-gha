@@ -49,7 +49,7 @@ app.post(
       password: Joi.string().required(),
     }),
   }),
-  login
+  login,
 );
 
 app.post(
@@ -63,7 +63,7 @@ app.post(
       password: Joi.string().required().min(8),
     }),
   }),
-  createUser
+  createUser,
 );
 
 app.use((req, res) => {

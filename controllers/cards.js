@@ -32,11 +32,11 @@ const deleteCard = (req, res, next) => {
     .orFail(() => new NotFoundError('Карточка не найдена'))
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
-        Card.findByIdAndRemove(cardId).then(() => res.send({ message: 'Карточка удалена' }));
+        Card.findByIdAndRemove(req.params.cardId).then(() => res.send({ message: 'Карточка удалена' }));
       } else {
         throw new ForbiddenError('Доступ запрещен');
       }
-      })
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные'));

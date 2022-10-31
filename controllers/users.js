@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
@@ -39,10 +40,10 @@ const createUser = (req, res, next) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        next(new BadRequestError("Переданы некорректные данные"));
-      } else if (err.code === 11000){
-        next(new EmailError("Такой email уже существует"));
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else if (err.code === 11000) {
+        next(new EmailError('Такой email уже существует'));
       }
     });
 };
@@ -109,7 +110,7 @@ const login = (req, res, next) => {
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      new NotFound('Пользователь не найден');
+      throw new NotFoundError('Пользователь не найден');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {

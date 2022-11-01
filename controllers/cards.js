@@ -29,19 +29,19 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(() => new NotFoundError("Карточка не найдена"))
+    .orFail(() => new NotFoundError('Карточка не найдена'))
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
-        Card.findByIdAndRemove(req.params.cardId).then(() =>
-          res.send({ message: 'Карточка удалена' }).catch(next)
-        );
+        Card.findByIdAndRemove(req.params.cardId)
+        .then(() => res.send({ message: 'Карточка удалена' }))
+        .catch(next);
       } else {
         throw new ForbiddenError('Доступ запрещен');
       }
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        next(new BadRequestError("Переданы некорректные данные"));
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }

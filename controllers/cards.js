@@ -33,8 +33,8 @@ const deleteCard = (req, res, next) => {
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
         Card.findByIdAndRemove(req.params.cardId)
-        .then(() => res.send({ message: 'Карточка удалена' }))
-        .catch(next);
+          .then(() => res.send({ message: 'Карточка удалена' }))
+          .catch(next);
       } else {
         throw new ForbiddenError('Доступ запрещен');
       }

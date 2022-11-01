@@ -49,6 +49,7 @@ const createUser = (req, res, next) => {
       } else if (err.code === 11000) {
         next(new EmailError('Такой email уже существует'));
       }
+      else {next(err)}
     });
 };
 

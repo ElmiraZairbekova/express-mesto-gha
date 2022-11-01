@@ -35,12 +35,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-app.use(users);
-app.use(cards);
-app.use(auth);
-app.use(errors());
-app.use(handleError);
-
 app.post(
   '/signin',
   celebrate({
@@ -60,16 +54,22 @@ app.post(
       about: Joi.string().min(2).max(30),
       avatar: Joi.string().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/),
       email: Joi.string().required().email(),
-      password: Joi.string().required().min(8),
+      password: Joi.string().required(),
     }),
   }),
   createUser,
 );
 
-app.use((req, res) => {
-  res.status(404)
-    .send({ message: 'Запрашиваемый ресурс не найден' });
-});
+app.use(auth);
+app.use(cards);
+app.use(users);
+app.use(errors());
+app.use(handleError);
+
+// app.use((req, res) => {
+//   res.status(404)
+//     .send({ message: 'Запрашиваемый ресурс не найден' });
+// });
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

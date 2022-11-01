@@ -34,7 +34,7 @@ const createUser = (req, res, next) => {
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
-      User.create({
+      return User.create({
         name,
         about,
         avatar,
@@ -42,7 +42,7 @@ const createUser = (req, res, next) => {
         password: hash,
       });
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ name, about, avatar, email, }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));

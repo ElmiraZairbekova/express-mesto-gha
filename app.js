@@ -63,13 +63,11 @@ app.post(
 app.use(auth);
 app.use(cards);
 app.use(users);
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Запрашиваемый ресурс не найден'));
+});
 app.use(errors());
 app.use(handleError);
-
-// app.use((req, res) => {
-//   res.status(404)
-//     .send({ message: 'Запрашиваемый ресурс не найден' });
-// });
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

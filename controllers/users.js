@@ -31,17 +31,16 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email,
   } = req.body;
-  return bcrypt
+  bcrypt
     .hash(req.body.password, 10)
-    .then((hash) => {
+    .then((hash) =>
       User.create({
         name,
         about,
         avatar,
         email,
         password: hash,
-      });
-    })
+      });)
     .then((user) => res.send({
       name: user.name,
       about: user.about,
